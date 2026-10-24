@@ -364,7 +364,7 @@ export default function Customers() {
                 >
                   <span className="td td-id">{c.id}</span>
                   <span className="td td-email">{c.email}</span>
-                  <span className="td num">{eur(c.balance)}</span>
+                  <span className="td num td-balance">{eur(c.balance)}</span>
                   <span className="td num">{eur(c.topped)}</span>
                   <span className="td td-score">
                     {c.score == null ? (
