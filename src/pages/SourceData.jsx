@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import './SourceData.css';
 
-/* ───────── API ─────────
- * Заглушки. Замените на вызовы из ../api/sourceApi.js:
- *  replaceSnapshot(data)        → PUT /api/v1/source/snapshot
- *  patchClient(id, autoRenew)   → изменение клиента + пересчёт
- */
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const api = {
   replaceSnapshot: async (/* data */) => { await wait(700); },

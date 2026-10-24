@@ -1,12 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import CustomerModal from '../components/CustomerModal';
 import './Customers.css';
 
-/* ───────── данные ─────────
- * Замените loadCustomers() на вызов вашего customersApi.
- * Ожидаемая форма строки:
- * { id, email, balance, topped, score|null, atRisk|null,
- *   signals: { autoRenewOff, lowFunds, prolongWait, expiresSoon }, daysLeft|null }
- */
 const PAGE_SIZE = 10;
 
 const HEAD = [
@@ -140,6 +136,8 @@ const SortIcon = ({ dir }) => (
 
 /* ───────── страница ───────── */
 export default function Customers() {
+  const navigate = useNavigate();
+  const [openId, setOpenId] = useState(null); // клиент в модальном окне
   const [rows, setRows] = useState(null);
   const [error, setError] = useState(null);
   const [query, setQuery] = useState('');
@@ -226,10 +224,8 @@ export default function Customers() {
     URL.revokeObjectURL(a.href);
   };
 
-  const openCard = (id) => {
-    // подключите роутер: navigate(`/customers/${id}`)
-    window.location.assign(`/customers/${id}`);
-  };
+  const openCard = (id) => setOpenId(id);
+  const openIndex = openId == null ? -1 : filtered.findIndex((c) => c.id === openId);
 
   return (
     <div className="cust">
@@ -360,7 +356,9 @@ export default function Customers() {
                   tabIndex={0}
                   className={`row ${c.id === updatedId ? 'is-updated' : ''}`}
                   onClick={() => openCard(c.id)}
-                  onKeyDown={(e) => e.key === 'Enter' && openCard(c.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCard(c.id); }
+                  }}
                 >
                   <span className="td td-id">{c.id}</span>
                   <span className="td td-email">{c.email}</span>
@@ -417,6 +415,18 @@ export default function Customers() {
           </footer>
         )}
       </section>
+
+      {openIndex >= 0 && (
+        <CustomerModal
+          customer={filtered[openIndex]}
+          position={openIndex + 1}
+          total={filtered.length}
+          onPrev={openIndex > 0 ? () => setOpenId(filtered[openIndex - 1].id) : undefined}
+          onNext={openIndex < filtered.length - 1 ? () => setOpenId(filtered[openIndex + 1].id) : undefined}
+          onClose={() => setOpenId(null)}
+          onOpenFull={() => navigate(`/customers/${openId}`)}
+        />
+      )}
     </div>
   );
 }
