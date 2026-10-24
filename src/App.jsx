@@ -9,13 +9,13 @@ import Login from './pages/Login';
 import './App.css';
 
 export default function App() {
-  const isCustomersPage = Boolean(useMatch('/customers'));
+  const isOverview = Boolean(useMatch({ path: '/', end: true }));
 
   return (
       <div className="app">
         <Sidebar />
         <div className="app-main">
-          {!isCustomersPage && (
+          {isOverview && (
               <header className="app-header">
                 <div className="app-header-right">
                   <div className="live-badge">

@@ -106,7 +106,6 @@
   width: 100%;
 }
 .th.num { justify-content: flex-end; text-align: right; }
-.td-balance { padding-right: 18px; }
 button.th:hover { color: var(--ink); }
 .th.is-sorted { color: var(--ink); font-weight: 600; }
 
@@ -120,6 +119,7 @@ button.th:hover { color: var(--ink); }
 .td { min-width: 0; }
 .td-email { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .num { text-align: right; font-variant-numeric: tabular-nums; }
+.td-balance { padding-right: 18px; }
 .strong { font-weight: 700; }
 .td-score { display: flex; align-items: center; gap: 10px; }
 .td-score b { font-size: 17px; min-width: 24px; text-align: right; }
