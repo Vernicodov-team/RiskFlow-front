@@ -1,0 +1,137 @@
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 276px;
+    height: 100vh;
+    padding: 20px 16px 24px;
+    display: flex;
+    flex-direction: column;
+    z-index: 50;
+}
+
+.sidebar-header {
+    height: 100px;
+    background: #ffffff;
+    border: 1px solid #e6e6e6;
+    border-radius: 20px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.sidebar-header-top {
+    height: 45px;
+    padding: 0 16px 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.sidebar-user {
+    font-size: 15px;
+    color: #1a1a1a;
+}
+
+.sidebar-icon-btn {
+    background: none;
+    border: none;
+    color: #1a1a1a;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-balance {
+    height: 54px;
+    padding: 0 13px 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-balance-value {
+    font-size: 25px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: #1a1a1a;
+}
+
+.sidebar-balance-badge {
+    background: #ff7a00;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 25px;
+    height: 25px;
+    padding: 0 12px;
+    border-radius: 10px;
+    margin-top: 4px;
+}
+
+.sidebar-nav,
+.sidebar-links {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar-nav {
+    flex: 1;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+    padding: 0 18px 0 16px;
+    border-radius: 16px;
+    font-size: 15px;
+    color: #1a1a1a;
+    transition: background 0.15s;
+}
+
+.sidebar-link svg {
+    color: #6b6b6b;
+}
+
+.sidebar-link:hover {
+    background: #ececec;
+}
+
+.sidebar-link-active {
+    background: #e6e6e6;
+}
+
+.sidebar-link-active svg {
+    color: #1a1a1a;
+}
+
+.sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 19px 16px 0;
+}
+
+.sidebar-logo-icon {
+    width: 34.5px;
+    height: 34.5px;
+    background: #ffffff;
+    border: 1.5px solid #e6e6e6;
+    border-radius: 9.25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.sidebar-logo-text {
+    font-size: 13px;
+    color: #8a8a8a;
+}

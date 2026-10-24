@@ -1,49 +1,41 @@
-import { useState } from "react";
-import Sidebar from "./components/Sidebar";
-import Login from "./pages/Login";
-import Overview from "./pages/Overview";
-import Customers from "./pages/Customers";
-import CustomerCard from "./pages/CustomerCard";
-import ModelSettings from "./pages/ModelSettings";
-import SourceData from "./pages/SourceData";
-import { RealtimeProvider } from "./context/RealtimeContext";
+import { Routes, Route } from 'react-router-dom';
+import Sidebar from './components/Sidebar';
+import Overview from './pages/Overview';
+import Customers from './pages/Customers';
+import CustomerCard from './pages/CustomerCard';
+import ModelSettings from './pages/ModelSettings';
+import SourceData from './pages/SourceData';
+import Login from './pages/Login';
+import './App.css';
 
-function App() {
-  const [activePage, setActivePage] = useState("Обзор");
-
-  function renderPage() {
-    switch (activePage) {
-      case "Обзор":
-        return <Overview />;
-
-      case "Клиенты":
-        return <Customers />;
-
-      case "Карточка клиента":
-        return <CustomerCard />;
-
-      case "Настройка модели":
-        return <ModelSettings />;
-
-      case "Данные":
-        return <SourceData />;
-
-      case "Вход":
-        return <Login />;
-
-      default:
-        return <Overview />;
-    }
-  }
-
+export default function App() {
   return (
-  <RealtimeProvider>
-    <div className="min-h-screen">
-      <Sidebar />
-      <main>{renderPage()}</main>
-    </div>
-  </RealtimeProvider>
-);
+      <div className="app">
+        <Sidebar />
+        <div className="app-main">
+          <header className="app-header">
+            <div className="app-header-right">
+              <div className="live-badge">
+                <span className="live-dot"></span>
+                <span className="live-text">live</span>
+                <span className="live-time">обновлено 3 сек назад</span>
+              </div>
+              <button className="horizon-btn">
+                горизонт · 14 дней<span className="horizon-caret">▾</span>
+              </button>
+            </div>
+          </header>
+          <main className="app-content">
+            <Routes>
+              <Route path="/" element={<Overview />} />
+              <Route path="/customers" element={<Customers />} />
+              <Route path="/customers/:id" element={<CustomerCard />} />
+              <Route path="/model" element={<ModelSettings />} />
+              <Route path="/data" element={<SourceData />} />
+              <Route path="/login" element={<Login />} />
+            </Routes>
+          </main>
+        </div>
+      </div>
+  );
 }
-
-export default App;

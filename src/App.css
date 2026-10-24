@@ -1,0 +1,88 @@
+.app {
+    min-height: 100vh;
+    padding: 16px 16px 16px 276px;
+    background: #f3f3f3;
+}
+
+.app-main {
+    position: relative;
+        min-height: calc(100vh - 32px);
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 36px 40px 40px;
+}
+
+.app-header {
+    position: absolute;
+    top: 36px;
+    right: 40px;
+    z-index: 10;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    white-space: nowrap;
+}
+
+.live-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    margin-top: 2.5px;
+    padding: 0 20px;
+    flex-shrink: 0;
+    background: #ededed;
+    border-radius: 20px;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: #2fa26b;
+    border-radius: 50%;
+}
+
+.live-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.live-time {
+    font-size: 13px;
+    color: #8a8a8a;
+}
+
+.horizon-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 45px;
+    padding: 0 24px;
+    flex-shrink: 0;
+    background: #ededed;
+    border: none;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    cursor: pointer;
+}
+
+.horizon-btn:hover {
+    background: #e6e6e6;
+}
+
+.horizon-caret {
+    font-size: 8px;
+}
+
+.app-header-right {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.app-content {
+    position: relative;
+}
