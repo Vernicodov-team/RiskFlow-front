@@ -1,16 +1,38 @@
-import { NavLink } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
     LayoutGrid,
     Users,
     SlidersHorizontal,
     Database,
     Bell,
-    Link2,
-    ChartLine,
+    LogOut,
+    X,
 } from 'lucide-react';
 import './Sidebar.css';
 
 export default function Sidebar() {
+    const navigate = useNavigate();
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const logoutBtnRef = useRef(null);
+    const stayBtnRef = useRef(null);
+
+    const closeModal = () => {
+        setConfirmOpen(false);
+        logoutBtnRef.current?.focus();
+    };
+    const logout = () => {
+        setConfirmOpen(false);
+        navigate('/login');
+    };
+
+    useEffect(() => {
+        if (!confirmOpen) return;
+        stayBtnRef.current?.parentElement.firstChild.focus();
+        const onKey = (e) => e.key === 'Escape' && closeModal();
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, [confirmOpen]);
     const navItems = [
         { to: '/', label: 'Обзор', icon: LayoutGrid },
         { to: '/customers', label: 'Клиенты', icon: Users },
@@ -50,20 +72,44 @@ export default function Sidebar() {
             </nav>
 
             <div className="sidebar-links">
-                <a href="#" className="sidebar-link">
-                    <span>API · Swagger</span>
-                    <Link2 size={20} strokeWidth={1.5} />
-                </a>
-                <a href="#" className="sidebar-link">
-                    <span>/metrics · Prometheus</span>
-                    <ChartLine size={20} strokeWidth={1.5} />
-                </a>
+                <button
+                    type="button"
+                    ref={logoutBtnRef}
+                    className="sidebar-logout"
+                    onClick={() => setConfirmOpen(true)}
+                >
+                    <span>Выйти</span>
+                    <LogOut size={20} strokeWidth={1.5} />
+                </button>
             </div>
 
             <div className="sidebar-footer">
                 <div className="sidebar-logo-icon">é</div>
                 <span className="sidebar-logo-text">attentionflow</span>
             </div>
+
+            {confirmOpen && (
+                <div className="modal-backdrop" onClick={closeModal}>
+                    <div
+                        className="modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="logout-title"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button type="button" className="modal-close" aria-label="Закрыть" onClick={closeModal}>
+                            <X size={18} />
+                        </button>
+                        <h2 id="logout-title" className="modal-title">выйти из аккаунта?</h2>
+                        <p className="modal-text">Настройки и данные сохранятся, войти можно в любой момент.</p>
+                        <div className="modal-actions">
+                            <button type="button" className="btn btn-dark" onClick={logout}>выйти</button>
+                            <button type="button" ref={stayBtnRef} className="btn btn-soft" onClick={closeModal}>остаться</button>
+                        </div>
+                        <div className="modal-hint">esc — закрыть</div>
+                    </div>
+                </div>
+            )}
         </aside>
     );
 }

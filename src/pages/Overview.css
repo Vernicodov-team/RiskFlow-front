@@ -58,7 +58,7 @@
 
 .overview-grid-3 {
     grid-template-columns: 315.6px 1fr 315.6px;
-    align-items: start;
+    align-items: stretch;
 }
 
 /* ---------- cards ---------- */
@@ -259,14 +259,18 @@
 }
 
 /* ---------- reasons ---------- */
-.overview-card-reasons {
-    height: 325px;
+.overview-card-reasons,
+.overview-card-money {
+    display: flex;
+    flex-direction: column;
 }
 
 .overview-reasons {
+    flex: 1;
     margin-top: 16px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 16px;
 }
 
@@ -287,10 +291,6 @@
 }
 
 /* ---------- money ---------- */
-.overview-card-money {
-    height: 334px;
-}
-
 .overview-money-list {
     margin-top: 16px;
     display: flex;
@@ -343,6 +343,11 @@
     font-size: 17px;
     font-weight: 700;
     color: #1a1a1a;
+}
+
+.overview-card-money .overview-card-hint {
+    margin-top: auto;
+    padding-top: 14px;
 }
 
 .overview-card-hint {
@@ -433,9 +438,13 @@
     border-top-style: dotted;
 }
 
+.overview-chart-wrap {
+    width: 100%;
+    margin-top: -4px;
+}
+
 .overview-chart {
     display: block;
-    margin-top: -4px;
     overflow: visible;
 }
 
@@ -474,7 +483,7 @@
 
 /* ---------- customers ---------- */
 .overview-card-customers {
-    height: 422px;
+    min-height: 422px;
 }
 
 .overview-customers-header {
@@ -504,7 +513,7 @@
     table-layout: fixed;
     border-collapse: separate;
     border-spacing: 0 8px;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .overview-customers-table th {
@@ -517,18 +526,55 @@
     white-space: nowrap;
 }
 
-.overview-customers-table th svg {
-    vertical-align: -3px;
-    margin-left: 1px;
+.sort-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    height: 28px;
+    margin: -7px 0 -7px -8px;
+    padding: 0 8px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    font: inherit;
+    font-size: 12px;
+    color: #8a8a8a;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.12s ease-out;
 }
 
-.overview-customers-table th.th-active {
+.text-right .sort-btn {
+    margin: -7px -8px -7px 0;
+}
+
+.sort-btn:hover {
+    background: #ededed;
+    color: #1a1a1a;
+}
+
+.sort-btn:active {
+    background: #e6e6e6;
+    transform: scale(0.98);
+}
+
+.sort-btn:focus-visible {
+    outline: 2px solid #1a1a1a;
+    outline-offset: 0;
+}
+
+.sort-btn-active {
     font-weight: 600;
     color: #1a1a1a;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .sort-btn { transition: none; }
+    .sort-btn:active { transform: none; }
+}
+
 .overview-customers-table td {
-    height: 49px;
+    height: 57px;
     padding: 10px 0;
     background: #ffffff;
     color: #1a1a1a;
@@ -538,12 +584,13 @@
 .overview-customers-table td:first-child { border-radius: 16px 0 0 16px; }
 .overview-customers-table td:last-child { border-radius: 0 16px 16px 0; }
 
-.th-id, .td-id { padding-left: 16px !important; }
+.th-id, .td-id { padding-left: 17px !important; }
+.td-id { font-weight: 500; }
 .th-email, .td-email { padding-left: 16px !important; }
 .th-balance, .td-balance { padding-right: 16px !important; }
 .th-score, .td-score { padding-left: 9px !important; }
 .th-level, .td-level { padding-left: 16px !important; }
-.th-reason, .td-reason { padding-left: 16px !important; padding-right: 20px !important; }
+.th-reason, .td-reason { padding-left: 16px !important; padding-right: 8px !important; }
 .th-risk, .td-risk { padding-right: 16px !important; }
 
 .text-right {
@@ -552,7 +599,7 @@
 
 .td-risk {
     font-weight: 700;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .overview-score-cell {
@@ -564,7 +611,7 @@
 .overview-score-value {
     min-width: 21px;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .overview-score-bar {
@@ -586,7 +633,7 @@
     height: 25px;
     padding: 0 12px;
     border-radius: 12.5px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
 }
 

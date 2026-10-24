@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { HelpCircle, ArrowRight, ArrowLeft, ChevronsUpDown, ArrowDown } from 'lucide-react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { HelpCircle, ArrowRight, ChevronsUpDown, ArrowDown, ArrowUp } from 'lucide-react';
 import './Overview.css';
 
 const RED = '#e5484d';
@@ -94,84 +94,140 @@ const fcRemoved = [4, 5, 4, 6, 5, 7, 6, 8, 7, 6];
 const fcRisk = [49, 50, 52, 51, 54, 55, 57, 58, 59, 60];
 const dates = ['13 окт', '15', '17', '19', '21', '23', '25', '27', '29', '31', '2 ноя'];
 
-// Координаты: SVG начинается в (340, 990) относительно страницы 1440 × 1857
-const OX = 340;
+// Высота и вертикальные координаты фиксированы (SVG начинается в y = 990 макета),
+// по горизонтали график растягивается на всю ширину карточки.
 const OY = 990;
-const X0 = 395.19 - OX; // левый край первой колонки
-const STEP = 44.381;
-const cx = (i) => 406.19 - OX + i * STEP;
+const PAD = 44; // поле слева и справа от области графика
 const yRight = (v) => 1238 - OY - (v / 12) * 200;
 const yLeft = (v) => 1238 - OY - (v / 60) * 200;
 
 function Dynamics() {
+    const wrapRef = useRef(null);
+    const [W, setW] = useState(1020);
+
+    useEffect(() => {
+        const el = wrapRef.current;
+        if (!el) return;
+        const update = () => setW(Math.max(Math.round(el.clientWidth), 640));
+        update();
+        const ro = new ResizeObserver(update);
+        ro.observe(el);
+        return () => ro.disconnect();
+    }, []);
+
+    const plotW = W - PAD * 2;
+    const step = plotW / 21;
+    const cx = (i) => PAD + step * (i + 0.5);
+    const barW = Math.min(22, step * 0.5);
     const factPts = factRisk.map((v, i) => [cx(i), yLeft(v)]);
     const fcPts = [factPts[10], ...fcRisk.map((v, i) => [cx(11 + i), yLeft(v)])];
     const path = (pts) => pts.map((p, i) => `${i ? 'L' : 'M'}${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(' ');
-    const todayX = 850 - OX;
+    const todayX = cx(10);
+    const plotRight = PAD + plotW;
+
     return (
-        <svg className="overview-chart" width="1020" height="300" viewBox="0 0 1020 300">
-            <text x="0" y="31" className="chart-axis-title">услуг под риском</text>
-            <text x="1020" y="31" textAnchor="end" className="chart-axis-title">удалений / непродлений в день</text>
+        <div ref={wrapRef} className="overview-chart-wrap">
+            <svg className="overview-chart" width={W} height="300" viewBox={`0 0 ${W} 300`}>
+                <text x="0" y="31" className="chart-axis-title">услуг под риском</text>
+                <text x={W} y="31" textAnchor="end" className="chart-axis-title">удалений / непродлений в день</text>
 
-            {/* прогнозная зона */}
-            <rect x={todayX} y={1028 - OY} width={1316 - 850} height="220" rx="12" fill="#fde6d2" />
+                {/* прогнозная зона */}
+                <rect x={todayX} y={1028 - OY} width={plotRight - todayX} height="220" rx="12" fill="#fde6d2" />
 
-            {/* сетка и подписи осей */}
-            {[0, 1, 2, 3, 4].map((k) => {
-                const y = 1038 - OY + k * 50;
-                return (
-                    <g key={k}>
-                        <rect x={384 - OX} y={y - 0.5} width="932" height="1" fill="#e6e6e6" />
-                        <text x="33" y={y + 4.5} textAnchor="end" className="chart-tick">{60 - k * 15}</text>
-                        <text x={1331 - OX} y={y + 4.5} className="chart-tick">{12 - k * 3}</text>
-                    </g>
-                );
-            })}
-            {/* линия-ориентир ниже зоны-сетки, поверх прогноза */}
-            <rect x={384 - OX} y={1238 - OY - 0.5} width="932" height="1" fill="#e6e6e6" />
+                {/* сетка и подписи осей */}
+                {[0, 1, 2, 3, 4].map((k) => {
+                    const y = 1038 - OY + k * 50;
+                    return (
+                        <g key={k}>
+                            <rect x={PAD} y={y - 0.5} width={plotW} height="1" fill="#e6e6e6" />
+                            <text x={PAD - 11} y={y + 4.5} textAnchor="end" className="chart-tick">{60 - k * 15}</text>
+                            <text x={W - 29} y={y + 4.5} className="chart-tick">{12 - k * 3}</text>
+                        </g>
+                    );
+                })}
 
-            {/* бары факта */}
-            {factRemoved.map((v, i) => (
-                <rect key={i} x={X0 + i * STEP} y={yRight(v)} width="22" height={(v / 12) * 200} rx="6" fill="#1f1f1f" />
-            ))}
-            {/* бары прогноза */}
-            {fcRemoved.map((v, i) => (
-                <rect
-                    key={i}
-                    x={X0 + (11 + i) * STEP + 1}
-                    y={yRight(v) + 1}
-                    width="20"
-                    height={(v / 12) * 200 - 2}
-                    rx="5"
-                    fill="none"
-                    stroke="#ff7a00"
-                    strokeWidth="2"
-                    strokeDasharray="3 3"
-                />
-            ))}
+                {/* бары факта */}
+                {factRemoved.map((v, i) => (
+                    <rect key={i} x={cx(i) - barW / 2} y={yRight(v)} width={barW} height={(v / 12) * 200} rx="6" fill="#1f1f1f" />
+                ))}
+                {/* бары прогноза */}
+                {fcRemoved.map((v, i) => (
+                    <rect
+                        key={i}
+                        x={cx(11 + i) - barW / 2 + 1}
+                        y={yRight(v) + 1}
+                        width={barW - 2}
+                        height={(v / 12) * 200 - 2}
+                        rx="5"
+                        fill="none"
+                        stroke="#ff7a00"
+                        strokeWidth="2"
+                        strokeDasharray="3 3"
+                    />
+                ))}
 
-            {/* линии */}
-            <path d={path(factPts)} stroke="#ff7a00" strokeWidth="3" fill="none" strokeLinejoin="round" strokeLinecap="round" />
-            <path d={path(fcPts)} stroke="#ff7a00" strokeWidth="3" fill="none" strokeDasharray="6 5" strokeLinejoin="round" />
+                {/* линии */}
+                <path d={path(factPts)} stroke="#ff7a00" strokeWidth="3" fill="none" strokeLinejoin="round" strokeLinecap="round" />
+                <path d={path(fcPts)} stroke="#ff7a00" strokeWidth="3" fill="none" strokeDasharray="6 5" strokeLinejoin="round" />
 
-            {/* сегодня */}
-            <rect x={todayX - 0.75} y={1028 - OY} width="1.5" height="220" fill="#1a1a1a" />
-            <circle cx={todayX} cy={yLeft(47)} r="4" fill="#ff7a00" stroke="#fff" strokeWidth="2" />
-            <rect x={795.5 - OX} y={1010 - OY} width="109" height="21" rx="10.5" fill="#1f1f1f" />
-            <text x={850 - OX} y={1024.5 - OY} textAnchor="middle" className="chart-today">сегодня · 23 окт</text>
-            <text x={785 - OX} y={1025 - OY} textAnchor="end" className="chart-side-label">← факт</text>
-            <text x={914 - OX} y={1025 - OY} className="chart-side-label chart-side-label-accent">прогноз →</text>
+                {/* сегодня */}
+                <rect x={todayX - 0.75} y={1028 - OY} width="1.5" height="220" fill="#1a1a1a" />
+                <circle cx={todayX} cy={yLeft(47)} r="4" fill="#ff7a00" stroke="#fff" strokeWidth="2" />
+                <rect x={todayX - 54.5} y={1010 - OY} width="109" height="21" rx="10.5" fill="#1f1f1f" />
+                <text x={todayX} y={1024.5 - OY} textAnchor="middle" className="chart-today">сегодня · 23 окт</text>
+                <text x={todayX - 65} y={1025 - OY} textAnchor="end" className="chart-side-label">← факт</text>
+                <text x={todayX + 64} y={1025 - OY} className="chart-side-label chart-side-label-accent">прогноз →</text>
 
-            {/* ось X */}
-            {dates.map((d, i) => (
-                <text key={d} x={cx(i * 2)} y={1266 - OY} textAnchor="middle" className="chart-tick">{d}</text>
-            ))}
-        </svg>
+                {/* ось X */}
+                {dates.map((d, i) => (
+                    <text key={d} x={cx(i * 2)} y={1266 - OY} textAnchor="middle" className="chart-tick">{d}</text>
+                ))}
+            </svg>
+        </div>
+    );
+}
+
+const collator = new Intl.Collator('ru', { numeric: true, sensitivity: 'base' });
+
+function SortHeader({ label, field, sort, onSort, className = '', align }) {
+    const active = sort.field === field;
+    const Icon = !active ? ChevronsUpDown : sort.dir === 'desc' ? ArrowDown : ArrowUp;
+    return (
+        <th
+            className={`${className} ${align === 'right' ? 'text-right' : ''}`}
+            aria-sort={active ? (sort.dir === 'desc' ? 'descending' : 'ascending') : 'none'}
+        >
+            <button
+                type="button"
+                className={`sort-btn ${active ? 'sort-btn-active' : ''}`}
+                onClick={() => onSort(field)}
+            >
+                {label}
+                <Icon size={15} />
+            </button>
+        </th>
     );
 }
 
 export default function Overview() {
     const [range, setRange] = useState('30 д');
+    // клик: другая колонка → ↓, та же колонка: ↓ → ↑ → ↓
+    const [sort, setSort] = useState({ field: 'score', dir: 'desc' });
+    const handleSort = (field) =>
+        setSort((prev) =>
+            prev.field === field
+                ? { field, dir: prev.dir === 'desc' ? 'asc' : 'desc' }
+                : { field, dir: 'desc' }
+        );
+    const sortedCustomers = useMemo(() => {
+        const k = sort.dir === 'desc' ? -1 : 1;
+        return [...topCustomers].sort((a, b) => {
+            const x = a[sort.field];
+            const y = b[sort.field];
+            const cmp = typeof x === 'string' ? collator.compare(x, y) : x - y;
+            return cmp * k;
+        });
+    }, [sort]);
 
     return (
         <div className="overview">
@@ -367,29 +423,29 @@ export default function Overview() {
                 </div>
                 <table className="overview-customers-table">
                     <colgroup>
-                        <col style={{ width: 72 }} />
-                        <col style={{ width: 180 }} />
-                        <col style={{ width: 114 }} />
-                        <col style={{ width: 101 }} />
-                        <col style={{ width: 121 }} />
-                        <col style={{ width: 128 }} />
-                        <col style={{ width: 204 }} />
+                        <col style={{ width: '7.2%' }} />
+                        <col style={{ width: '19.1%' }} />
+                        <col style={{ width: '9.5%' }} />
+                        <col style={{ width: '10.1%' }} />
+                        <col style={{ width: '11.8%' }} />
+                        <col style={{ width: '12.6%' }} />
+                        <col style={{ width: '20.3%' }} />
                         <col />
                     </colgroup>
                     <thead>
                     <tr>
-                        <th className="th-id">ID <ChevronsUpDown size={14} /></th>
-                        <th className="th-email">email <ChevronsUpDown size={14} /></th>
-                        <th className="text-right th-balance">баланс <ChevronsUpDown size={14} /></th>
-                        <th className="text-right th-repl">пополнено <ChevronsUpDown size={14} /></th>
-                        <th className="th-score th-active">risk-score <ArrowDown size={14} /></th>
+                        <SortHeader label="ID" field="id" className="th-id" sort={sort} onSort={handleSort} />
+                        <SortHeader label="email" field="email" className="th-email" sort={sort} onSort={handleSort} />
+                        <SortHeader label="баланс" field="balance" className="th-balance" align="right" sort={sort} onSort={handleSort} />
+                        <SortHeader label="пополнено" field="replenished" className="th-repl" align="right" sort={sort} onSort={handleSort} />
+                        <SortHeader label="risk-score" field="score" className="th-score" sort={sort} onSort={handleSort} />
                         <th className="th-level">уровень</th>
                         <th className="th-reason">главная причина</th>
-                        <th className="text-right th-risk">под риском <ChevronsUpDown size={14} /></th>
+                        <SortHeader label="под риском" field="atRisk" className="th-risk" align="right" sort={sort} onSort={handleSort} />
                     </tr>
                     </thead>
                     <tbody>
-                    {topCustomers.map((c) => {
+                    {sortedCustomers.map((c) => {
                         const meta = levelMeta(c.level);
                         return (
                             <tr key={c.id}>
